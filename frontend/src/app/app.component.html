@@ -1,0 +1,14 @@
+<div class="navbar">
+  <div class="navbar-content">
+    <a routerLink="/dashboard" class="navbar-brand">{{ title }}</a>
+    <div class="navbar-menu" *ngIf="isAuthenticated()">
+      <a routerLink="/dashboard" routerLinkActive="active" class="navbar-link">Dashboard</a>
+      <a routerLink="/tasks" routerLinkActive="active" class="navbar-link">Tasks</a>
+      <a routerLink="/users" routerLinkActive="active" class="navbar-link" *ngIf="isAdmin()">Users</a>
+      <button (click)="logout()" class="btn btn-secondary">Logout</button>
+    </div>
+  </div>
+</div>
+
+<router-outlet></router-outlet>
+

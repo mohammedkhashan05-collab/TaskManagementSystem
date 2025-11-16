@@ -1,0 +1,147 @@
+<div class="container">
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h1>Task Management</h1>
+      <button class="btn btn-primary" (click)="openCreateForm()" *ngIf="isAdmin && !showForm">Create New Task</button>
+    </div>
+
+    <div class="alert alert-error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div class="alert alert-success" *ngIf="successMessage">
+      {{ successMessage }}
+    </div>
+
+    <div *ngIf="showForm" class="card" style="margin-bottom: 20px; background: #f8f9fa;">
+      <h3>{{ editingTask ? 'Edit Task' : 'Create New Task' }}</h3>
+      <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input
+            type="text"
+            id="title"
+            formControlName="title"
+            [class.error]="title?.invalid && title?.touched"
+            [disabled]="!isAdmin && editingTask !== null"
+          />
+          <div class="error-message" *ngIf="title?.invalid && title?.touched">
+            Title is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea
+            id="description"
+            formControlName="description"
+            [disabled]="!isAdmin && editingTask !== null"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select
+            id="status"
+            formControlName="status"
+            [class.error]="status?.invalid && status?.touched"
+          >
+            <option value="Pending">Pending</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+          <div class="error-message" *ngIf="status?.invalid && status?.touched">
+            Status is required
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="isAdmin">
+          <label for="assignedUserId">Assigned To</label>
+          <select
+            id="assignedUserId"
+            formControlName="assignedUserId"
+            [class.error]="assignedUserId?.invalid && assignedUserId?.touched"
+            [disabled]="!isAdmin && editingTask !== null"
+          >
+            <option [value]="null">Select User</option>
+            <option *ngFor="let user of users" [value]="user.id">
+              {{ user.username }} ({{ user.role }})
+            </option>
+          </select>
+          <div class="error-message" *ngIf="assignedUserId?.invalid && assignedUserId?.touched">
+            Assigned user is required
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="taskForm.invalid || isLoading"
+          >
+            {{ isLoading ? 'Saving...' : (editingTask ? 'Update' : 'Create') }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelForm()"
+            [disabled]="isLoading"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div *ngIf="isLoading && !showForm" style="text-align: center; padding: 40px;">
+      Loading tasks...
+    </div>
+
+    <div *ngIf="!isLoading && !showForm">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Assigned To</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let task of tasks">
+            <td>{{ task.title }}</td>
+            <td>{{ task.description || '-' }}</td>
+            <td>
+              <span class="badge" [ngClass]="getStatusClass(task.status)">
+                {{ task.status }}
+              </span>
+            </td>
+            <td>{{ task.assignedUserName }}</td>
+            <td>{{ task.createdAt | date:'short' }}</td>
+            <td>
+              <button
+                *ngIf="canEditTask(task)"
+                class="btn btn-primary"
+                (click)="isAdmin ? openEditForm(task) : openStatusUpdateForm(task)"
+                style="margin-right: 5px; padding: 5px 10px; font-size: 12px;"
+              >
+                {{ isAdmin ? 'Edit' : 'Update Status' }}
+              </button>
+              <button
+                *ngIf="canDeleteTask()"
+                class="btn btn-danger"
+                (click)="deleteTask(task.id)"
+                style="padding: 5px 10px; font-size: 12px;"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+

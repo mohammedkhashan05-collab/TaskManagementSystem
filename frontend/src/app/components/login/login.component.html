@@ -1,0 +1,53 @@
+<div class="container" style="max-width: 400px; margin-top: 100px;">
+  <div class="card">
+    <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">Login</h2>
+    
+    <div class="alert alert-error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          formControlName="username"
+          [class.error]="username?.invalid && username?.touched"
+        />
+        <div class="error-message" *ngIf="username?.invalid && username?.touched">
+          Username is required
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          [class.error]="password?.invalid && password?.touched"
+        />
+        <div class="error-message" *ngIf="password?.invalid && password?.touched">
+          Password is required
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary"
+        style="width: 100%;"
+        [disabled]="loginForm.invalid || isLoading"
+      >
+        {{ isLoading ? 'Logging in...' : 'Login' }}
+      </button>
+    </form>
+
+    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 6px; font-size: 12px;">
+      <strong>Test Credentials:</strong><br>
+      Admin: username: <code>admin</code>, password: <code>Admin123!</code><br>
+      User: username: <code>user</code>, password: <code>User123!</code>
+    </div>
+  </div>
+</div>
+
